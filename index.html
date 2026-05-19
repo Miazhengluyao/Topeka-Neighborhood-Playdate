@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Bad Weather Walking Club - Playdate Matcher MVP</title>
+    <!-- 引入 Tailwind CSS 用于快速精美排版 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- 引入 FontAwesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .step-panel { display: none; }
+        .step-panel.active { display: block; }
+    </style>
+</head>
+<body class="bg-stone-100 font-sans min-h-screen flex justify-center antialiased">
+
+    <!-- 模拟手机外壳容器，方便 Pitch 演示 -->
+    <div class="w-full max-w-md bg-white min-h-screen flex flex-col shadow-2xl relative border-x border-stone-200">
+        
+        <!-- App Top Bar -->
+        <header class="bg-emerald-600 text-white px-6 py-4 shadow-sm flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-tree-city text-xl"></i>
+                <h1 class="font-bold text-lg tracking-wide">NBW Playdate Match</h1>
+            </div>
+            <span class="text-xs bg-emerald-700 px-2 py-1 rounded-full text-stone-200 font-mono">Topeka MVP</span>
+        </header>
+
+        <!-- 主体内容滚动区 -->
+        <main class="flex-1 p-5 overflow-y-auto pb-12">
+
+            <!-- ==================== 板块一：ONBOARDING (新手引导) ==================== -->
+            
+            <!-- Step 1: Location -->
+            <div id="step-location" class="step-panel active space-y-6">
+                <div class="text-center py-4">
+                    <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Step 1 of 3</span>
+                    <h2 class="text-2xl font-black text-stone-800 mt-1">Where do you live in Topeka?</h2>
+                    <p class="text-stone-500 text-sm mt-1">We'll keep matches close to home.</p>
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="selectLocation('Central')" class="w-full p-4 text-left border-2 border-stone-200 rounded-2xl hover:border-emerald-500 font-medium text-stone-700 flex justify-between items-center transition-all bg-stone-50/50">
+                        <span>📍 Central Topeka (near Gage Park)</span> <i class="fa-solid fa-chevron-right text-stone-400"></i>
+                    </button>
+                    <button onclick="selectLocation('Southwest')" class="w-full p-4 text-left border-2 border-stone-200 rounded-2xl hover:border-emerald-500 font-medium text-stone-700 flex justify-between items-center transition-all bg-stone-50/50">
+                        <span>🏡 Southwest (near Shunga Trail)</span> <i class="fa-solid fa-chevron-right text-stone-400"></i>
+                    </button>
+                    <button onclick="selectLocation('Southeast')" class="w-full p-4 text-left border-2 border-stone-200 rounded-2xl hover:border-emerald-500 font-medium text-stone-700 flex justify-between items-center transition-all bg-stone-50/50">
+                        <span>🌅 Southeast (near Lake Shawnee)</span> <i class="fa-solid fa-chevron-right text-stone-400"></i>
+                    </button>
+                    <button onclick="selectLocation('Northwest')" class="w-full p-4 text-left border-2 border-stone-200 rounded-2xl hover:border-emerald-500 font-medium text-stone-700 flex justify-between items-center transition-all bg-stone-50/50">
+                        <span>🪵 Northwest (near Garfield Park)</span> <i class="fa-solid fa-chevron-right text-stone-400"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Kid's Age -->
+            <div id="step-age" class="step-panel space-y-6">
+                <div class="text-center py-4">
+                    <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Step 2 of 3</span>
+                    <h2 class="text-2xl font-black text-stone-800 mt-1">How old is your little explorer?</h2>
+                    <p class="text-stone-500 text-sm mt-1">For finding kiddos with similar developmental stages.</p>
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="selectAge('0-1')" class="p-4 text-left border-2 border-stone-200 rounded-2xl font-medium text-stone-700 hover:border-emerald-500 bg-stone-50/50">👶 0 - 1 year old (Infant/Crawler)</button>
+                    <button onclick="selectAge('1-2')" class="p-4 text-left border-2 border-stone-200 rounded-2xl font-medium text-stone-700 hover:border-emerald-500 bg-stone-50/50">🐣 1 - 2 years old (Toddler/Walker)</button>
+                    <button onclick="selectAge('2-3')" class="p-4 text-left border-2 border-stone-200 rounded-2xl font-medium text-stone-700 hover:border-emerald-500 bg-stone-50/50">🦁 2 - 3 years old (Explorer)</button>
+                    <button onclick="selectAge('3-4')" class="p-4 text-left border-2 border-stone-200 rounded-2xl font-medium text-stone-700 hover:border-emerald-500 bg-stone-50/50">🦖 3 - 4 years old (Preschooler)</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Criteria -->
+            <div id="step-criteria" class="step-panel space-y-6">
+                <div class="text-center py-4">
+                    <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Step 3 of 3</span>
+                    <h2 class="text-2xl font-black text-stone-800 mt-1">Park Criteria</h2>
+                    <p class="text-stone-500 text-sm mt-1">Pick what matters to you today.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-stone-800 text-sm mb-2 uppercase tracking-wide text-rose-600"><i class="fa-solid fa-star"></i> Must-Haves (Non-negotiable)</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <label class="px-3 py-2 bg-stone-100 rounded-full border text-xs cursor-pointer select-none font-medium flex items-center gap-1"><input type="checkbox" class="must-tag" value="restroom"> 🚻 Restroom</label>
+                            <label class="px-3 py-2 bg-stone-100 rounded-full border text-xs cursor-pointer select-none font-medium flex items-center gap-1"><input type="checkbox" class="must-tag" value="stroller"> 🛒 Stroller-Friendly</label>
+                            <label class="px-3 py-2 bg-stone-100 rounded-full border text-xs cursor-pointer select-none font-medium flex items-center gap-1"><input type="checkbox" class="must-tag" value="fenced"> 🚧 Fenced-In Playground</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-stone-800 text-sm mb-2 uppercase tracking-wide text-amber-600"><i class="fa-solid fa-heart"></i> Nice-to-Haves (Bonus points)</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <label class="px-3 py-2 bg-stone-100 rounded-full border text-xs cursor-pointer select-none font-medium flex items-center gap-1"><input type="checkbox" class="nice-tag" value="shade"> 🌳 Heavy Shade</label>
+                            <label class="px-3 py-2 bg-stone-100 rounded-full border text-xs cursor-pointer select-none font-medium flex items-center gap-1"><input type="checkbox" class="nice-tag" value="parking"> 🚗 Big Parking Lot</label>
+                            <label class="px-3 py-2 bg-stone-100 rounded-full border text-xs cursor-pointer select-none font-medium flex items-center gap-1"><input type="checkbox" class="nice-tag" value="ramp"> ♿ ADA Ramp</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="calculateAhaMoment()" class="w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-md hover:bg-emerald-700 transition-all text-center mt-6 block">
+                    Find My Anchor Park ✨
+                </button>
+            </div>
+
+            <!-- Aha Moment Display -->
+            <div id="panel-aha" class="step-panel space-y-6">
+                <div class="text-center py-2 animate-bounce">
+                    <span class="text-3xl">🎉</span>
+                    <h2 class="text-2xl font-black text-stone-800 mt-1">Your Anchor Park!</h2>
+                </div>
+
+                <!-- Hybrid Approach: 主推大卡片 -->
+                <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-500 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 text-emerald-100/50 text-8xl font-black"><i class="fa-solid fa-tree"></i></div>
+                    <span class="bg-emerald-600 text-white text-[10px] uppercase font-black px-2 py-0.5 rounded-md tracking-wider">🏆 Best Match</span>
+                    <h3 id="aha-park-name" class="text-2xl font-black text-stone-800 mt-2">Gage Park</h3>
+                    <p id="aha-park-desc" class="text-xs text-stone-500 mt-1">Central Topeka • Perfect for 0-4 Years</p>
+                    
+                    <div class="mt-4 pt-4 border-t border-emerald-200/60">
+                        <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Why you’ll love it today:</p>
+                        <div id="aha-park-tags" class="flex flex-wrap gap-1.5 mt-2">
+                            <!-- Tags will dynamic display here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 轻量级切换入口 (Shuffle/Plan B) -->
+                <div class="text-center">
+                    <button onclick="shuffleAnchorPark()" class="text-sm font-semibold text-stone-500 hover:text-emerald-600 underline underline-offset-4 decoration-dotted">
+                        <i class="fa-solid fa-shuffle"></i> Not the vibe today? Shuffle park
+                    </button>
+                </div>
+
+                <button onclick="goToMatchPlaza()" class="w-full py-4 bg-stone-900 text-white font-bold rounded-2xl shadow-lg hover:bg-stone-800 transition-all text-center mt-4">
+                    Enter Match Plaza <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+
+            <!-- ==================== 板块二：MATCH PLAZA (匹配广场) ==================== -->
+            <div id="panel-plaza" class="step-panel space-y-6">
+                <!-- 顶部门头：显示当前筛选定位 -->
+                <div class="bg-stone-50 border border-stone-200 rounded-2xl p-4 flex items-center justify-between text-xs text-stone-600">
+                    <div>
+                        <p>📍 Area: <span id="summary-loc" class="font-bold text-stone-800">SW</span> | 👶 Age: <span id="summary-age" class="font-bold text-stone-800">1-2y</span></p>
+                        <p class="mt-1">🚩 Anchor: <span id="summary-park" class="font-bold text-emerald-600">Gage Park</span></p>
+                    </div>
+                    <button onclick="resetFlow()" class="text-stone-400 hover:text-rose-500 font-bold"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                </div>
+
+                <!-- 意向状态开关 (Toggle) -->
+                <div class="bg-white border-2 border-stone-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                    <div>
+                        <h4 class="font-bold text-stone-800 text-sm">Playdate Availability</h4>
+                        <p class="text-stone-400 text-xs mt-0.5">I wanna set up a play date this week.</p>
+                    </div>
+                    <!-- Toggle Switch -->
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="plaza-toggle" onchange="toggleAvailability(this)" class="sr-only peer">
+                        <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                </div>
+
+                <!-- 默认关闭状态提示 -->
+                <div id="plaza-empty" class="text-center py-10 space-y-3 bg-stone-50/50 rounded-2xl border border-dashed border-stone-300">
+                    <span class="text-3xl">💤</span>
+                    <h4 class="font-bold text-stone-700 text-sm">You are currently offline</h4>
+                    <p class="text-xs text-stone-400 max-w-xs mx-auto px-4">Turn on the toggle switch above to select your available times and match with local moms!</p>
+                </div>
+
+                <!-- 展开后的时间选择板块 (14块矩阵) -->
+                <div id="plaza-time-selector" class="hidden space-y-4">
+                    <h4 class="font-bold text-stone-800 text-sm uppercase tracking-wider text-center"><i class="fa-regular fa-calendar-days text-emerald-600"></i> Select your free slots this week:</h4>
+                    
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <!-- 动态渲染 14个板块 -->
+                        <!-- 格式：周几 AM / PM -->
+                        <div class="border rounded-xl p-2 bg-stone-50"><p class="font-bold text-stone-700 mb-1">Mon (周一)</p>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Mon-AM" class="time-slot-box"> AM (Morning)</label>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Mon-PM" class="time-slot-box"> PM (Afternoon)</label>
+                        </div>
+                        <div class="border rounded-xl p-2 bg-stone-50"><p class="font-bold text-stone-700 mb-1">Tue (周二)</p>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Tue-AM" class="time-slot-box"> AM</label>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Tue-PM" class="time-slot-box"> PM</label>
+                        </div>
+                        <div class="border rounded-xl p-2 bg-stone-50"><p class="font-bold text-stone-700 mb-1">Wed (周三)</p>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Wed-AM" class="time-slot-box"> AM</label>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Wed-PM" class="time-slot-box"> PM</label>
+                        </div>
+                        <div class="border rounded-xl p-2 bg-stone-50"><p class="font-bold text-stone-700 mb-1">Thu (周四)</p>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Thu-AM" class="time-slot-box"> AM</label>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Thu-PM" class="time-slot-box"> PM</label>
+                        </div>
+                        <div class="border rounded-xl p-2 bg-stone-50 bg-amber-50/40"><p class="font-bold text-stone-700 mb-1">Fri (周五)</p>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Fri-AM" class="time-slot-box"> AM</label>
+                            <label class="flex items-center gap-1.5 py-1"><input type="checkbox" value="Fri-PM" class="time-slot-box"> PM</label>
+                        </div>
+                        <div class="border rounded-xl p-2 bg-amber-50/50 border-amber-200"><p class="font-bold text-amber-800 mb-1">Sat (周六) 🎉</p>
+                            <label class="flex items-center gap-1.5 py-1 font-semibold text-amber-900"><input type="checkbox" value="Sat-AM" class="time-slot-box"> AM (Popular)</label>
+                            <label class="flex items-center gap-1.5 py-1 font-semibold text-amber-900"><input type="checkbox" value="Sat-PM" class="time-slot-box"> PM (Popular)</label>
+                        </div>
+                        <div class="border rounded-xl p-2 bg-amber-50/50 border-amber-200 col-span-2"><p class="font-bold text-amber-800 mb-1">Sun (周日) 🎉</p>
+                            <div class="flex gap-6">
+                                <label class="flex items-center gap-1.5 py-1 font-semibold text-amber-900"><input type="checkbox" value="Sun-AM" class="time-slot-box"> AM (Morning)</label>
+                                <label class="flex items-center gap-1.5 py-1 font-semibold text-amber-900"><input type="checkbox" value="Sun-PM" class="time-slot-box"> PM (Afternoon)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模拟配对按钮，用于 Pitch 展示触发 -->
+                    <button onclick="triggerMatchSearch()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-xl shadow-md hover:from-emerald-700 text-sm">
+                        Simulate Matching & Overlap! ⚡
+                    </button>
+                </div>
+
+                <!-- ==================== PLAYDATE HUB (活动枢纽) ==================== -->
+                <!-- 匹配成功后的连带区域 -->
+                <div id="panel-hub" class="hidden bg-white border border-emerald-100 rounded-2xl p-5 shadow-lg space-y-4 animate-fade-in-down">
+                    <div class="flex items-center gap-3 border-b pb-3 border-stone-100">
+                        <div class="flex -space-x-2">
+                            <span class="w-8 h-8 rounded-full bg-emerald-500 text-white text-xs font-bold flex items-center justify-center border border-white">You</span>
+                            <span class="w-8 h-8 rounded-full bg-indigo-500 text-white text-xs font-bold flex items-center justify-center border border-white">Sarah</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded uppercase">It's a Match!</span>
+                            <!-- 采用亲切饱满的文案风 -->
+                            <p id="hub-copywriting" class="text-xs text-stone-600 mt-0.5">You and Sarah both have 1-2yo toddlers nearby, and you're both free!</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-stone-50 rounded-xl p-3 text-xs space-y-2">
+                        <p class="text-stone-500"><i class="fa-solid fa-location-dot text-emerald-600"></i> Intended Park: <span id="hub-park-name" class="font-bold text-stone-800">Gage Park</span></p>
+                        <p class="text-stone-500"><i class="fa-regular fa-clock text-emerald-600"></i> Overlap Found: <span id="hub-overlap-time" class="font-bold text-stone-800 text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Saturday PM</span></p>
+                    </div>
+
+                    <!-- LET'S MEET 核心功能入口 -->
+                    <button onclick="launchEventPage()" class="w-full py-3 bg-emerald-600 text-white font-black text-sm rounded-xl text-center flex items-center justify-center gap-2 shadow-md hover:bg-emerald-700">
+                        🚀 Let's Meet!
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- ==================== 板块三：EVENT RSVP (活动页) ==================== -->
+            <div id="panel-event" class="step-panel space-y-6">
+                <div class="text-center">
+                    <span class="bg-rose-100 text-rose-700 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">📅 Playdate RSVP Page</span>
+                    <h2 class="text-2xl font-black text-stone-800 mt-2">Walking Club Playdate!</h2>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-stone-200">
+                    <!-- 卡片小条幅 -->
+                    <div class="bg-stone-900 text-stone-300 p-4 text-xs flex justify-between items-center">
+                        <span>Host: <b class="text-white">You (First to click!)</b></span>
+                        <span class="bg-emerald-600 text-white px-2 py-0.5 rounded-md text-[10px] uppercase font-bold">Active</span>
+                    </div>
+
+                    <div class="p-5 space-y-4">
+                        <h3 id="event-park-title" class="text-xl font-bold text-stone-800">🌳 Gage Park Playdate</h3>
+                        
+                        <div class="space-y-2.5 text-sm text-stone-600">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-regular fa-calendar text-emerald-600 w-4"></i>
+                                <span>Time: <strong id="event-time-display" class="text-stone-800">This Saturday PM</strong></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-map-location-dot text-emerald-600 w-4"></i>
+                                <span>Location: <span id="event-location-display" class="text-stone-800 font-medium">Topeka, KS</span></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-children text-emerald-600 w-4"></i>
+                                <span>Target Age Group: <span id="event-age-display" class="bg-stone-100 text-stone-700 text-xs px-2 py-0.5 rounded-full font-bold">1-2y</span></span>
+                            </div>
+                        </div>
+
+                        <!-- RSVP 人数表盘 -->
+                        <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 mt-2">
+                            <p class="text-xs font-bold text-emerald-900 uppercase">Who is going (2 Joined):</p>
+                            <ul class="text-xs text-stone-600 mt-2 space-y-1.5">
+                                <li>🙋‍♀️ <strong>You</strong> (with 1.5yo kiddo)</li>
+                                <li>👩‍ <strong>Sarah</strong> (with 1yo toddler)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-stone-50 border rounded-2xl p-4 text-xs text-stone-400 text-center">
+                    📢 Subsequent moms logging into the app with the same overlap will see this event card and can directly tap <strong>"Join RSVP"</strong>. No repetitive creation!
+                </div>
+
+                <button onclick="resetFlow()" class="w-full py-4 border-2 border-dashed border-stone-300 text-stone-500 font-bold rounded-2xl hover:bg-stone-50 transition-all text-center">
+                    <i class="fa-solid fa-repeat"></i> Start Over / Demo Again
+                </button>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ==================== 核心写死逻辑 JAVASCRIPT ==================== -->
+    <script>
+        // 1. 写死15个Topeka最热门公园及特征数据库
+        const TOPEKA_PARKS_DB = [
+            { name: "Gage Park (Playground Area)", area: "Central", age: "1-2", tags: ["restroom", "stroller", "shade", "parking"], desc: "Topeka's crown jewel. Near the mini-train, high shade density." },
+            { name: "Lake Shawnee Adventure Cove Park", area: "Southeast", age: "2-3", tags: ["restroom", "parking", "ramp"], desc: "Great open views by the lake, fantastic play structures." },
+            { name: "Shunga Parkway Park (SW Trail Node)", area: "Southwest", age: "1-2", tags: ["stroller", "shade"], desc: "Beautiful continuous path, great tree canopy for hot days." },
+            { name: "Garfield Park", area: "Northwest", age: "3-4", tags: ["restroom", "fenced", "parking"], desc: "Spacious historic neighborhood hub with strong community feel." },
+            { name: "Crestview Park", area: "Southwest", age: "2-3", tags: ["restroom", "parking", "shade"], desc: "Quiet neighborhood spot with disc golf access, very family friendly." },
+            { name: "Dornwood Park", area: "Southeast", age: "3-4", tags: ["shade"], desc: "For natural woods walking, perfect for older toddlers who love hiking." },
+            { name: "Hughes Park", area: "Central", age: "0-1", tags: ["fenced", "stroller"], desc: "Cozy, fully enclosed playground, perfect peace of mind for tiny crawlers." },
+            { name: "Chester-Rotary Park", area: "Northwest", age: "1-2", tags: ["stroller", "ramp"], desc: "Very accessible flat asphalt walking trail nodes." },
+            { name: "Felker Park", area: "Southwest", age: "3-4", tags: ["restroom", "parking"], desc: "Famous for tennis, has dynamic fields and a solid kids arena." },
+            { name: "Ripley Park", area: "Central", age: "2-3", tags: ["restroom", "fenced", "ramp"], desc: "One of Topeka's oldest historic parks, massive playground space." },
+            { name: "Iliff Commons", area: "Northwest", age: "3-4", tags: ["shade"], desc: "Pure prairie/woods walking experience for authentic NBW style." },
+            { name: "Betty Phillips Park", area: "Southeast", age: "0-1", tags: ["fenced"], desc: "Charming neighborhood pocket park, great for small groups." },
+            { name: "Ken Berry Park", area: "Northwest", age: "2-3", tags: ["parking", "restroom"], desc: "Great baseball diamonds and adjacent modern playground structures." },
+            { name: "Children's Party Park", area: "Central", age: "1-2", tags: ["fenced", "shade", "stroller"], desc: "Highly shaded, tailor-made for smaller group playdates." },
+            { name: "Kossover Tennis Center Park", area: "Southwest", age: "2-3", tags: ["restroom", "parking", "stroller"], desc: "Excellent walkways, highly accessible structures." }
+        ];
+
+        // 用户当前交互状态缓存
+        let currentUserSelections = {
+            location: "",
+            age: "",
+            mustTags: [],
+            niceTags: [],
+            anchorPark: null,
+            matchedOverlapTime: ""
+        };
+
+        // 页面跳转控制器
+        function showPanel(panelId) {
+            document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(panelId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Onboarding Step 1 -> Step 2
+        function selectLocation(loc) {
+            currentUserSelections.location = loc;
+            showPanel('step-age');
+        }
+
+        // Onboarding Step 2 -> Step 3
+        function selectAge(ageRange) {
+            currentUserSelections.age = ageRange;
+            showPanel('step-criteria');
+        }
+
+        // Onboarding Step 3 -> 计算并得出 Aha Moment (Anchor Park)
+        function calculateAhaMoment() {
+            // 抓取打勾的特征
+            currentUserSelections.mustTags = Array.from(document.querySelectorAll('.must-tag:checked')).map(el => el.value);
+            currentUserSelections.niceTags = Array.from(document.querySelectorAll('.nice-tag:checked')).map(el => el.value);
+
+            // 简易推荐引擎过滤
+            let matchedParks = TOPEKA_PARKS_DB.filter(park => {
+                // 如果区域对应，或者作为大区模糊推荐
+                let matchLoc = (park.area === currentUserSelections.location);
+                // Must have 强过滤
+                let matchMust = currentUserSelections.mustTags.every(tag => park.tags.includes(tag));
+                return matchMust; 
+            });
+
+            // 兜底策略：如果没有100%匹配Must-have的本地公园，则全库随机一个热门
+            if (matchedParks.length === 0) {
+                matchedParks = TOPEKA_PARKS_DB;
+            }
+
+            // 混合策略：默认展示检索到的第一个作为 Hero Recommended
+            currentUserSelections.anchorPark = matchedParks[0];
+            renderAhaCard();
+            showPanel('panel-aha');
+        }
+
+        // 渲染大卡片和标签
+        function renderAhaCard() {
+            const park = currentUserSelections.anchorPark;
+            document.getElementById('aha-park-name').innerText = park.name;
+            document.getElementById('aha-park-desc').innerText = `${park.area} Topeka • ${park.desc}`;
+            
+            const tagsContainer = document.getElementById('aha-park-tags');
+            tagsContainer.innerHTML = "";
+            
+            // 循环打出标签样式
+            park.tags.forEach(tag => {
+                let span = document.createElement('span');
+                span.className = "bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase";
+                span.innerText = `✓ ${tag}`;
+                tagsContainer.appendChild(span);
+            });
+        }
+
+        // 轻量级切换 (Shuffle/Plan B)
+        function shuffleAnchorPark() {
+            // 在15个里面随机抽一个别的公园换换口味
+            let currentIndex = TOPEKA_PARKS_DB.findIndex(p => p.name === currentUserSelections.anchorPark.name);
+            let nextIndex = (currentIndex + 1) % TOPEKA_PARKS_DB.length;
+            currentUserSelections.anchorPark = TOPEKA_PARKS_DB[nextIndex];
+            renderAhaCard();
+        }
+
+        // 进入匹配广场 (Match Plaza)
+        function goToMatchPlaza() {
+            // 填充顶部面包屑摘要
+            document.getElementById('summary-loc').innerText = currentUserSelections.location;
+            document.getElementById('summary-age').innerText = `${currentUserSelections.age}y`;
+            document.getElementById('summary-park').innerText = currentUserSelections.anchorPark.name;
+
+            // 重置 Toggle 开关
+            document.getElementById('plaza-toggle').checked = false;
+            document.getElementById('plaza-time-selector').classList.add('hidden');
+            document.getElementById('plaza-empty').classList.remove('hidden');
+            document.getElementById('panel-hub').classList.add('hidden');
+
+            showPanel('panel-plaza');
+        }
+
+        // 意向开关 Toggle 联动
+        function toggleAvailability(checkbox) {
+            if (checkbox.checked) {
+                document.getElementById('plaza-time-selector').classList.remove('hidden');
+                document.getElementById('plaza-empty').classList.add('hidden');
+            } else {
+                document.getElementById('plaza-time-selector').classList.add('hidden');
+                document.getElementById('plaza-empty').classList.remove('hidden');
+                document.getElementById('panel-hub').classList.add('hidden');
+            }
+        }
+
+        // 模拟配对寻找重叠 (Simulate Multi-user overlap)
+        function triggerMatchSearch() {
+            // 检查有没有勾选任何时间板块
+            let checkedBoxes = document.querySelectorAll('.time-slot-box:checked');
+            if (checkedBoxes.length === 0) {
+                alert("Please select at least one time slot to simulate overlap! (请至少勾选一个14板块时间以便模拟重叠)");
+                return;
+            }
+
+            // 抓取第一个勾选的时间段作为 Overlap 的结果展示
+            let chosenTimeRaw = checkedBoxes[0].value;
+            // 转换易读格式 (e.g. Sat-AM -> This Saturday Morning)
+            let formattedTime = chosenTimeRaw.replace('-', ' ');
+            currentUserSelections.matchedOverlapTime = formattedTime;
+
+            // 动态修改 Hub 板块文案 (亲切风)
+            document.getElementById('hub-copywriting').innerHTML = `You and <strong>Sarah</strong> both live near <strong>${currentUserSelections.location}</strong>, have <strong>${currentUserSelections.age}yo</strong> kids, and want to hit the park this week!`;
+            document.getElementById('hub-park-name').innerText = currentUserSelections.anchorPark.name;
+            document.getElementById('hub-overlap-time').innerText = formattedTime;
+
+            // 展示 Hub 卡片
+            document.getElementById('panel-hub').classList.remove('hidden');
+            // 自动滚动到页面下方
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        // 点击 LET'S MEET，一键直达最终活动页
+        function launchEventPage() {
+            document.getElementById('event-park-title').innerText = `🌳 ${currentUserSelections.anchorPark.name} Playdate`;
+            document.getElementById('event-time-display').innerText = currentUserSelections.matchedOverlapTime;
+            document.getElementById('event-location-display').innerText = `${currentUserSelections.anchorPark.name} (${currentUserSelections.anchorPark.area} Topeka)`;
+            document.getElementById('event-age-display').innerText = `${currentUserSelections.age} years old`;
+
+            showPanel('panel-event');
+        }
+
+        // 状态重置，方便循环多次向不同妈妈演示
+        function resetFlow() {
+            currentUserSelections = { location: "", age: "", mustTags: [], niceTags: [], anchorPark: null, matchedOverlapTime: "" };
+            // 清理所有已打勾的框
+            document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+            showPanel('step-location');
+        }
+    </script>
+</body>
+</html>
